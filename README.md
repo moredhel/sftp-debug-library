@@ -9,6 +9,22 @@ This repo does a number of things:
 2. run the latest version of the library against the sftp server
 3. run an older version of the library against the sftp server
 
+## Usage
+
+To run the older version:
+
+``` shell
+make old
+```
+
+To run the older version:
+
+``` shell
+make new
+```
+
+both of these will check to see if the sftp server is up and running, and if not start it up before executing the node.
+
 
 ## Future
 
