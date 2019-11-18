@@ -1,72 +1,44 @@
-var Client = require('ssh2-sftp-client');
+const Client = require('ssh2-sftp-client');
 
-const host = process.env.FTP_HOST || "localhost";
-const port = Number(process.env.FTP_PORT || "22");
-const username = process.env.FTP_USERNAME || "foo";
-const password = process.env.FTP_PASSWORD || "pass";
-const hostKeyAlgorithm = process.env.FTP_HOST_KEY_ALGORITHM;
-const basePath = process.env.FTP_BASE_PATH || "/";
-
-
-// initial config
-var ftpConfig = {
-  host,
-  port,
-  username,
-  basePath,
-  password,
-  debug: console.info,
-  // algorithms: {
-  //   key: [
-  //     "diffie-hellman-group1-sha1",
-  //   ],
-  //   cipher: [
-  //     "blowfish-cbc",
-  //     "3des-cbc"
-  //   ],
-  //   compress: [
-  //     "zlib"
-  //   ],
-  //   hmac: [
-  //     "hmac-sha1",
-  //     "hmac-md5"
-  //   ]
-  // }
-};
-
-// try connect N times & count the failures. & print out the config
-function try_connect(config, count) {
-  var results = {
-    "success": 0,
-    "failure": 0,
-  }
-  var promise = Promise.resolve(results)
-  console.log(config)
-  return do_try_connect(promise, config, count)
+const ftpConfig = {
+  host: process.env.FTP_HOST || "localhost",
+  port: Number(process.env.FTP_PORT || "22"),
+  username: process.env.FTP_USERNAME || "foo",
+  password: process.env.FTP_PASSWORD || "pass",
+  hostKeyAlgorithm: process.env.FTP_HOST_KEY_ALGORITHM,
+  basePath: process.env.FTP_BASE_PATH || "/",
+  debug: (process.env.DEBUG_LOG || "false") == "true",
+  count: parseInt(process.env.COUNT || "10")
 }
 
-var br = false;
-function do_try_connect(promise, config, count) {
-  if (count <= 0 || br) {
-    return promise.then((results) => {
-      results["config"] = config
-    })
+const logger = console;
+
+async function tryConnect() {
+  const results = {
+    success: 0,
+    failure: 0,
   }
 
-  // return
-  promise.then((results) => {
-	let sftp = new Client()
-    return sftp.connect(ftpConfig).then(() => {
-      return sftp.list('/');
-    }).then(data => {
-      console.log("success")
-    }).catch(err => {
-	  console.log(err)
-      console.log("failure")
-    }).then(() => sftp.end())
-  })
+  const sftpClient = new Client()
 
-  return do_try_connect(promise, config, count-1)
+  for (index = 0; index < ftpConfig.count; index++) {
+    try {
+      await sftpClient.connect({ ...ftpConfig, ...(ftpConfig.debug? { debug: logger.error } : {}) });
+      results.success++
+    } catch (e) {
+      logger.error("[SFTP-DEBUG-LIBRARY]: caught an error trying to connect:", e)
+    }
+
+    setTimeout(()=> {}, 2000)
+
+    await sftpClient.end()
+  }
+
+  return { ...results, failure: ftpConfig.count - results.success }
 }
 
-try_connect(ftpConfig, 10).then(data => console.log(data))
+tryConnect().then(results => {
+  logger.info(results);
+}).catch(e => {
+  logger.error(e)
+})

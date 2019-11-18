@@ -5,8 +5,8 @@ start-sftp:
 .PHONY: old
 old: start-sftp
 	cp new/index.js old/index.js
-	cd old && node index.js
+	cd old && npm start
 
 .PHONY: new
 new: start-sftp
-	cd new && node index.js
+	cd new && npm start
