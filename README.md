@@ -14,12 +14,16 @@ This repo does a number of things:
 To run the older version:
 
 ``` shell
+# from root of project
+cd ./old && npm i
 make old
 ```
 
-To run the older version:
+To run the newer version:
 
 ``` shell
+# from root of project
+cd ./new && npm i
 make new
 ```
 
