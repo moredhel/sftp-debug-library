@@ -1,7 +1,5 @@
 var Client = require('ssh2-sftp-client');
 
-let sftp = new Client();
-
 const host = process.env.FTP_HOST || "localhost";
 const port = Number(process.env.FTP_PORT || "22");
 const username = process.env.FTP_USERNAME || "foo";
@@ -17,7 +15,7 @@ var ftpConfig = {
   username,
   basePath,
   password,
-  debug: console.info,
+  // debug: console.info,
   // algorithms: {
   //   key: [
   //     "diffie-hellman-group1-sha1",
@@ -57,19 +55,18 @@ function do_try_connect(promise, config, count) {
 
   // return
   promise.then((results) => {
-    console.log("attempting...")
-    return (new Client()).connect(ftpConfig).then(() => {
+	let sftp = new Client()
+    return sftp.connect(ftpConfig).then(() => {
       return sftp.list('/');
     }).then(data => {
       console.log("success")
     }).catch(err => {
+	  console.log(err)
       console.log("failure")
-    })
+    }).then(() => sftp.end())
   })
 
-  return promise
-  // return do_try_connect(promise, config, 0)
+  return do_try_connect(promise, config, count-1)
 }
 
-
-try_connect(ftpConfig, 1).then(data => console.log(data))
+try_connect(ftpConfig, 10).then(data => console.log(data))

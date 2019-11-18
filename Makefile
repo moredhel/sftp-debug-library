@@ -4,8 +4,9 @@ start-sftp:
 
 .PHONY: old
 old: start-sftp
-	node old/index.js
+	cp new/index.js old/index.js
+	cd old && node index.js
 
 .PHONY: new
 new: start-sftp
-	node new/index.js
+	cd new && node index.js
