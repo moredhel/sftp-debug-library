@@ -2,7 +2,7 @@ const Client = require('ssh2-sftp-client');
 
 const ftpConfig = {
   host: process.env.FTP_HOST || "localhost",
-  port: Number(process.env.FTP_PORT || "22"),
+  port: parseInt(process.env.FTP_PORT || "22"),
   username: process.env.FTP_USERNAME || "foo",
   password: process.env.FTP_PASSWORD || "pass",
   hostKeyAlgorithm: process.env.FTP_HOST_KEY_ALGORITHM,
@@ -24,6 +24,7 @@ async function tryConnect() {
   for (index = 0; index < ftpConfig.count; index++) {
     try {
       await sftpClient.connect({ ...ftpConfig, ...(ftpConfig.debug? { debug: logger.error } : {}) });
+      await sftpClient.list('/')
       results.success++
     } catch (e) {
       logger.error("[SFTP-DEBUG-LIBRARY]: caught an error trying to connect:", e)
