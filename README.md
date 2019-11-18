@@ -17,7 +17,7 @@ To run the older version:
 make old
 ```
 
-To run the older version:
+To run the newer version:
 
 ``` shell
 make new
