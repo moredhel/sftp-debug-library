@@ -26,14 +26,21 @@ async function tryConnect() {
       await sftpClient.connect({ ...ftpConfig, ...(ftpConfig.debug? { debug: logger.error } : {}) });
       await sftpClient.list('/')
       results.success++
+      logger.info("[SFTP-DEBUG-LIBRARY]: success", `pass: ${index}`)
     } catch (e) {
-      logger.error("[SFTP-DEBUG-LIBRARY]: caught an error trying to connect:", e)
+      logger.error("[SFTP-DEBUG-LIBRARY]: caught an error trying to connect:", `pass: ${index}`, e)
+      results.failure++
     }
 
     await sftpClient.end()
+
+    // delay to let the system clean up resources
+    await new Promise(resolve => {
+      setTimeout(resolve, 500)
+    })
   }
 
-  return { ...results, failure: ftpConfig.count - results.success }
+  return results
 }
 
 tryConnect().then(results => {
