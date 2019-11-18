@@ -29,8 +29,6 @@ async function tryConnect() {
       logger.error("[SFTP-DEBUG-LIBRARY]: caught an error trying to connect:", e)
     }
 
-    setTimeout(()=> {}, 2000)
-
     await sftpClient.end()
   }
 
