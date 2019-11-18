@@ -15,7 +15,7 @@ var ftpConfig = {
   username,
   basePath,
   password,
-  // debug: console.info,
+  debug: console.info,
   // algorithms: {
   //   key: [
   //     "diffie-hellman-group1-sha1",
