@@ -3,6 +3,6 @@
     "start": "DEBUG_LOG=true COUNT=${COUNT} node index.js"
   },
   "dependencies": {
-    "ssh2-sftp-client": "^4.2.3"
+    "ssh2-sftp-client": "^9.1.0"
   }
 }
